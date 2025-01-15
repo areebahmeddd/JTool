@@ -17,9 +17,13 @@ def serialize(obj):
 
     # Dictionary
     elif isinstance(obj, dict):
-        items = []
-        for key, value in obj.items():
-            serialized_key = serialize(key)
-            serialized_value = serialize(value)
-            items.append(f'{serialized_key}:{serialized_value}')
-            return '{' + ','.join(items) + '}'
+        items = [f"{serialize(key)}:{serialize(value)}" for key, value in obj.items()]
+        return '{' + ','.join(items) + '}'
+
+    # Lists
+    elif isinstance(obj, list):
+        items = [serialize(item) for item in obj]
+        return '[' + ','.join(items) + ']'
+
+    else:
+        raise TypeError(f'Unsupported type: {type(obj)}')
