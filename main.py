@@ -12,7 +12,7 @@ if __name__ == '__main__':
     deserialized_data = deserialize(json_str)
     print(f'\nDeserialized Data: {deserialized_data}')
 
-    # Need to fix this error later
+    # TODO: Fix ValueError, Test nested data
     # # Test 3: Serialization and then Deserialization
     # deserialized_back = deserialize(serialized_data)
     # print(f'\nDeserialized Back from Serialized Data: {deserialized_back}')

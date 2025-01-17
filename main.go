@@ -8,7 +8,7 @@ func main() {
 		"name":       "Areeb",
 		"age":        21,
 		"is_student": true,
-		"courses":    []interface{}{"Math", "Science"},
+		"courses":    []interface{}{"DBMS", "OS"},
 	}
 
 	// Serialize

@@ -10,12 +10,20 @@ import (
 func Deserialize(json string) (interface{}, error) {
 	json = strings.TrimSpace(json)
 
-	// Handle null
-	if json == "null" {
-		return nil, nil
+	// Handle string values
+	if strings.HasPrefix(json, `"`) && strings.HasSuffix(json, `"`) {
+		return json[1 : len(json)-1], nil
 	}
 
-	// Handle booleans
+	// Handle numeric values
+	if num, err := strconv.Atoi(json); err == nil {
+		return num, nil
+	}
+	if num, err := strconv.ParseFloat(json, 64); err == nil {
+		return num, nil
+	}
+
+	// Handle boolean values
 	switch json {
 	case "true":
 		return true, nil
@@ -23,18 +31,9 @@ func Deserialize(json string) (interface{}, error) {
 		return false, nil
 	}
 
-	// Handle numbers (integers and floats)
-	if num, err := strconv.Atoi(json); err == nil {
-		return num, nil
-	}
-
-	if num, err := strconv.ParseFloat(json, 64); err == nil {
-		return num, nil
-	}
-
-	// Handle strings
-	if strings.HasPrefix(json, `"`) && strings.HasSuffix(json, `"`) {
-		return json[1 : len(json)-1], nil
+	// Handle null value
+	if json == "null" {
+		return nil, nil
 	}
 
 	// Handle arrays
@@ -87,6 +86,7 @@ func Deserialize(json string) (interface{}, error) {
 		return obj, nil
 	}
 
+	// Return error for invalid JSON
 	return nil, errors.New("invalid JSON string")
 }
 
