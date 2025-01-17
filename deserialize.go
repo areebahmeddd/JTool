@@ -10,12 +10,20 @@ import (
 func Deserialize(json string) (interface{}, error) {
 	json = strings.TrimSpace(json)
 
-	// Handle null
-	if json == "null" {
-		return nil, nil
+	// Handle string values
+	if strings.HasPrefix(json, `"`) && strings.HasSuffix(json, `"`) {
+		return json[1 : len(json)-1], nil
 	}
 
-	// Handle booleans
+	// Handle numeric values
+	if num, _ := strconv.Atoi(json); num != 0 {
+		return num, nil
+	}
+	if num, _ := strconv.ParseFloat(json, 64); num != 0 {
+		return num, nil
+	}
+
+	// Handle boolean values
 	switch json {
 	case "true":
 		return true, nil
@@ -23,18 +31,9 @@ func Deserialize(json string) (interface{}, error) {
 		return false, nil
 	}
 
-	// Handle numbers (integers and floats)
-	if num, err := strconv.Atoi(json); err == nil {
-		return num, nil
-	}
-
-	if num, err := strconv.ParseFloat(json, 64); err == nil {
-		return num, nil
-	}
-
-	// Handle strings
-	if strings.HasPrefix(json, `"`) && strings.HasSuffix(json, `"`) {
-		return json[1 : len(json)-1], nil
+	// Handle null value
+	if json == "null" {
+		return nil, nil
 	}
 
 	// Handle arrays
@@ -44,10 +43,7 @@ func Deserialize(json string) (interface{}, error) {
 		var array []interface{}
 
 		for _, element := range elements {
-			val, err := Deserialize(element)
-			if err != nil {
-				return nil, err
-			}
+			val, _ := Deserialize(element)
 			array = append(array, val)
 		}
 
@@ -66,15 +62,8 @@ func Deserialize(json string) (interface{}, error) {
 				return nil, errors.New("invalid JSON object")
 			}
 
-			key, err := Deserialize(keyValue[0])
-			if err != nil {
-				return nil, err
-			}
-
-			value, err := Deserialize(keyValue[1])
-			if err != nil {
-				return nil, err
-			}
+			key, _ := Deserialize(keyValue[0])
+			value, _ := Deserialize(keyValue[1])
 
 			strKey, ok := key.(string)
 			if !ok {
@@ -87,6 +76,7 @@ func Deserialize(json string) (interface{}, error) {
 		return obj, nil
 	}
 
+	// Return error for invalid JSON
 	return nil, errors.New("invalid JSON string")
 }
 
